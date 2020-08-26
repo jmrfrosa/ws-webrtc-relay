@@ -4,6 +4,15 @@ const { v4: uuidv4 } = require('uuid');
 let users = []
 const wss = new WebSocket.Server({ port: 443 });
 
+const sendScanData = () => {
+  wss.clients.forEach(client => {
+    client.send(JSON.stringify({
+      type: 'scan',
+      data: { login: client.uid, peers: activeUsers() }
+    }))
+  });
+}
+
 const targetSocket = (uid) => {
   const user = users.find(u => u.id === uid);
   if (!user) return;
@@ -18,18 +27,12 @@ wss.on("connection", (ws) => {
   console.log(`Received connection from ${ws.uid}`);
 
   users.push({ id: ws.uid, ws });
-
-  wss.clients.forEach(client => {
-    client.send(JSON.stringify({ type: 'scan', data: { login: client.uid, peers: activeUsers() } }))
-  });
+  sendScanData();
 
   ws.on("close", () => {
     console.log(`Disconnecting user ${ws.uid}`);
     users = users.filter(u => u.ws !== ws);
-
-    wss.clients.forEach(client => {
-      client.send(JSON.stringify({ type: 'scan', data: { login: client.uid, peers: activeUsers() } }))
-    })
+    sendScanData();
   });
 
   ws.on("message", (message) => {
