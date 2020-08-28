@@ -1,9 +1,10 @@
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
+const PORT = process.env.PORT || 443;
 
 let users = []
-console.log("Booting up server!");
-const wss = new WebSocket.Server({ port: process.env.PORT || 443 });
+console.log(`Booting up server on port ${PORT}!`);
+const wss = new WebSocket.Server({ port: PORT });
 
 const sendScanData = () => {
   wss.clients.forEach(client => {
