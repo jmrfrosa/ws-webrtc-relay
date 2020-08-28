@@ -2,6 +2,7 @@ const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 
 let users = []
+console.log("Booting up server!");
 const wss = new WebSocket.Server({ port: 443 });
 
 const sendScanData = () => {
